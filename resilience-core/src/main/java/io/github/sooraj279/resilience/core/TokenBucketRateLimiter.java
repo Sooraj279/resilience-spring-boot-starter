@@ -22,15 +22,17 @@ public class TokenBucketRateLimiter implements RateLimiter {
     * */
 
     @Override
-    public boolean tryAcquire(String key) {
+    public RateLimitResult tryAcquire(String key) {
         Bucket bucket = buckets.computeIfAbsent(key, k -> new Bucket(capacity));
         synchronized (bucket){ //Uses synchronized (bucket), so two requests for the same user cannot both steal the same token at the same time.
             refill(bucket);
             if (bucket.tokens >= 1.0) {
                 bucket.tokens -= 1.0;
-                return true;
+                return RateLimitResult.allow((long) bucket.tokens);
             }
-            return false;
+            double deficit = 1.0 - bucket.tokens;
+            long retryAfterMillis = (long) Math.ceil(deficit/refillTokensPerNano/1_000_000.0);
+            return RateLimitResult.reject(retryAfterMillis);
         }
     }
 
@@ -49,7 +51,7 @@ public class TokenBucketRateLimiter implements RateLimiter {
         long lastRefillNanos;
 
         Bucket(long capacity){
-            this.tokens = capacity;
+            this.tokens = capacity; //start full
             this.lastRefillNanos = System.nanoTime(); //right timer for measuring elapsed time.
         }
     }

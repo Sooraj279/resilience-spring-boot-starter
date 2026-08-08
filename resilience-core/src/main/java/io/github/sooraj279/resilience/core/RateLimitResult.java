@@ -4,7 +4,7 @@ package io.github.sooraj279.resilience.core;
  * The outcome of a rate limit check.
  *
  * @param allowed whether the caller may proceed
- * @param remaining permits left, or -1 when unknown (backend unavaiable)
+ * @param remaining permits left, or -1 when unknown (backend unavailable)
  * @param retryAfterMillis how long until the caller could succeed; 0 when allowed
  */
 

@@ -3,7 +3,7 @@ package io.github.sooraj279.resilience.core;
 public interface RateLimiter {
     /**
      * @param key identifies who is being rate limited — a user ID, an API key, an IP, etc.
-     * @return true if the request is allowed, false if the caller should be rejected
+     * @return the rate-limit decision, remaining permits, and retry delay
      */
-    boolean tryAcquire(String key);
+    RateLimitResult tryAcquire(String key);
 }
