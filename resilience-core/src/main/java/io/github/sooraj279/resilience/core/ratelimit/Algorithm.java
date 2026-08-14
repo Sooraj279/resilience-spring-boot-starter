@@ -1,4 +1,4 @@
-package io.github.sooraj279.resilience.core;
+package io.github.sooraj279.resilience.core.ratelimit;
 
 public enum Algorithm {
     TOKEN_BUCKET,

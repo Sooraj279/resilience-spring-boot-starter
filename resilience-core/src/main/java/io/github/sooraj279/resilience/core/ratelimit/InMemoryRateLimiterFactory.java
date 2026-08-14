@@ -1,4 +1,4 @@
-package io.github.sooraj279.resilience.core;
+package io.github.sooraj279.resilience.core.ratelimit;
 
 import java.util.concurrent.TimeUnit;
 

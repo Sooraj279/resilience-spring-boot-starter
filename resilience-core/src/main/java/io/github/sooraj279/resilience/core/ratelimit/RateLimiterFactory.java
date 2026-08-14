@@ -1,4 +1,4 @@
-package io.github.sooraj279.resilience.core;
+package io.github.sooraj279.resilience.core.ratelimit;
 
 /**
  * Creates limiters. This indirection is what lets one aspect run against

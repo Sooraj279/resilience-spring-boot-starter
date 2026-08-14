@@ -1,4 +1,4 @@
-package io.github.sooraj279.resilience.core;
+package io.github.sooraj279.resilience.core.ratelimit;
 
 /**
  * Configuration for one named limiter. For SLIDING_WINDOW, {@code capacity}

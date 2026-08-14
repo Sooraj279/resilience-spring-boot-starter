@@ -1,0 +1,17 @@
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+resilience:
+  enabled: true
+  rate-limit:
+    backend: redis      # switch to in-memory to compare
+    fail-open: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics
