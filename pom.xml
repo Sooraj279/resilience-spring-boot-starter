@@ -21,6 +21,7 @@
         <module>resilience-starter</module>
         <module>demo-app</module>
         <module>resilience-redis</module>
+        <module>resilience-benchmarks</module>
     </modules>
 
     <properties>

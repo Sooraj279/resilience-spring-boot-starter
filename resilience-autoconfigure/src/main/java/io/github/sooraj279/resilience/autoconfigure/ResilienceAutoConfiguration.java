@@ -35,7 +35,21 @@ import org.springframework.context.annotation.Configuration;
  * Those beans live in the nested configurations below, which are skipped from
  * ASM metadata before they are ever loaded.
  */
-@AutoConfiguration
+/*
+ * Ordering note: the MetricsConfiguration below uses @ConditionalOnBean(MeterRegistry),
+ * which only sees bean definitions registered by auto-configurations processed EARLIER.
+ * Boot sorts auto-configurations by class name before applying ordering annotations, and
+ * "io.github.sooraj279..." sorts ahead of "org.springframework.boot...", so without the
+ * afterName below this class is evaluated before any MeterRegistry exists — the condition
+ * silently fails and no metrics are ever recorded.
+ *
+ * Declared by name, not by Class, because the Micrometer metrics module is not a
+ * dependency of this one.
+ */
+@AutoConfiguration(afterName = {
+        "org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration",
+        "org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration"
+})
 @EnableConfigurationProperties(ResilienceProperties.class)
 @ConditionalOnProperty(prefix = "resilience", name = "enabled",
         havingValue = "true", matchIfMissing = true)

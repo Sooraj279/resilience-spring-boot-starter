@@ -7,6 +7,8 @@ import io.github.sooraj279.resilience.autoconfigure.web.RateLimitHeaderWriter;
 import io.github.sooraj279.resilience.core.circuitbreaker.CircuitBreakerRegistry;
 import io.github.sooraj279.resilience.core.ratelimit.InMemoryRateLimiterFactory;
 import io.github.sooraj279.resilience.core.ratelimit.RateLimiterFactory;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -50,7 +52,7 @@ class ResilienceAutoConfigurationTest {
 
     /**
      * Micrometer is {@code optional} here, so it is absent from the classpath of
-     * any downstream module that does not depend on it — resilience-redis, for
+     * any downstream module that does not depend on it - resilience-redis, for
      * one. Spring reflects over the whole auto-configuration class, so a method
      * mentioning MeterRegistry used to blow it up with a NoClassDefFoundError
      * before any condition was consulted.
@@ -88,5 +90,20 @@ class ResilienceAutoConfigurationTest {
                         .hasNotFailed()
                         .hasSingleBean(RateLimiterFactory.class)
                         .hasSingleBean(CircuitBreakerRegistry.class));
+    }
+
+    /**
+     * Guards the wiring, not the ordering. With a MeterRegistry bean present, the
+     * metrics bean must exist. The ordering half - that this auto-configuration is
+     * sorted after Boot's metrics auto-configuration, so that the bean condition
+     * actually sees a registry - is enforced by the afterName attribute on the
+     * class and is only exercised end to end by demo-app.
+     */
+    @Test
+    void registersMetricsWhenAMeterRegistryIsPresent() {
+        runner.withBean(MeterRegistry.class, SimpleMeterRegistry::new)
+                .run(context -> assertThat(context)
+                        .hasNotFailed()
+                        .hasSingleBean(ResilienceMetrics.class));
     }
 }
